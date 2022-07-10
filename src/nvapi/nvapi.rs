@@ -1,4 +1,4 @@
-use crate::nvapi_sys::NvAPI_Initialize;
+use nvapi_sys_new::NvAPI_Initialize;
 
 pub fn initialize() {
     unsafe {

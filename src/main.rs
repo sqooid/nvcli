@@ -1,5 +1,5 @@
 pub mod nvapi;
-pub mod nvapi_sys;
+// pub mod nvapi_sys_new;
 
 fn main() {
     nvapi::nvapi::initialize();

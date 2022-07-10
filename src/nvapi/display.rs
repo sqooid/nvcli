@@ -1,4 +1,4 @@
-use crate::nvapi_sys::{NvAPI_GPU_GetConnectedDisplayIds, NvPhysicalGpuHandle, NV_GPU_DISPLAYIDS};
+use nvapi_sys_new::{NvAPI_GPU_GetConnectedDisplayIds, NvPhysicalGpuHandle, NV_GPU_DISPLAYIDS};
 
 pub fn get_display_ids(gpu_handle: NvPhysicalGpuHandle) -> Vec<NV_GPU_DISPLAYIDS> {
     let mut display_ids: Vec<NV_GPU_DISPLAYIDS>;

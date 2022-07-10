@@ -1,4 +1,4 @@
-use crate::nvapi_sys::{NvAPI_EnumPhysicalGPUs, NvPhysicalGpuHandle, NvPhysicalGpuHandle__};
+use nvapi_sys_new::{NvAPI_EnumPhysicalGPUs, NvPhysicalGpuHandle, NvPhysicalGpuHandle__};
 
 pub fn get_gpu_handles() -> Vec<NvPhysicalGpuHandle> {
     let mut gpus: Vec<NvPhysicalGpuHandle> = vec![];
