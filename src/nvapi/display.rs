@@ -13,12 +13,16 @@ pub fn get_display_ids(gpu_handle: NvPhysicalGpuHandle) -> Vec<NV_GPU_DISPLAYIDS
         display_ids = vec![
             NV_GPU_DISPLAYIDS {
                 version: NV_GPU_DISPLAYIDS_VER2,
-                connectorType: 0,
-                displayId: 0,
+                ..NV_GPU_DISPLAYIDS::default()
             };
-            *display_count as usize
+            display_count as usize
         ];
-        NvAPI_GPU_GetConnectedDisplayIds(gpu_handle, display_ids.as_mut_ptr(), display_count, 0);
+        NvAPI_GPU_GetConnectedDisplayIds(
+            gpu_handle,
+            display_ids.as_mut_ptr(),
+            &mut display_count,
+            0,
+        );
     }
     display_ids
 }

@@ -2,8 +2,8 @@ use crate::nvapi_sys::{NvAPI_EnumPhysicalGPUs, NvPhysicalGpuHandle, NvPhysicalGp
 
 pub fn get_gpu_handles() -> Vec<NvPhysicalGpuHandle> {
     let mut gpus: Vec<NvPhysicalGpuHandle> = vec![];
-    let gpu_handles: [NvPhysicalGpuHandle__; 64] = [NvPhysicalGpuHandle__ { unused: 0 }; 64];
-    let gpu_handle_ptrs: [NvPhysicalGpuHandle; 64] = [0 as NvPhysicalGpuHandle; 64];
+    let mut gpu_handles: [NvPhysicalGpuHandle__; 64] = [NvPhysicalGpuHandle__ { unused: 0 }; 64];
+    let mut gpu_handle_ptrs: [NvPhysicalGpuHandle; 64] = [0 as NvPhysicalGpuHandle; 64];
     for i in 0..64 {
         gpu_handle_ptrs[i] = &mut gpu_handles[i];
     }
