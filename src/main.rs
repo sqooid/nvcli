@@ -1,15 +1,10 @@
-use nvapi_hi::sys::{gpu::NvAPI_EnumPhysicalGPUs, handles::NvPhysicalGpuHandle};
+pub mod nvapi;
+pub mod nvapi_sys;
 
 fn main() {
-    get_display_ids();
-}
-
-fn get_display_ids() {
-    let gpu_handles: *mut [NvPhysicalGpuHandle; 64] = &mut [NvPhysicalGpuHandle::default(); 64];
-    let gpu_count: *mut u32 = &mut 0;
-    unsafe {
-        NvAPI_EnumPhysicalGPUs(gpu_handles, gpu_count);
-        println!("handles {:?}", *gpu_handles);
-        println!("count {:?}", *gpu_count);
-    }
+    nvapi::initialize();
+    let gpu_handles = nvapi::gpu::get_gpu_handles();
+    let display_ids = nvapi::display::get_display_ids(gpu_handles[0]);
+    println!("{:?}", &gpu_handles);
+    println!("{:?}", &display_ids);
 }
