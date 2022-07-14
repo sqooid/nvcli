@@ -15,6 +15,10 @@ pub mod cli;
 pub mod nvapi;
 
 fn main() -> crate::cli::error::Result<()> {
+    if std::env::args().len() < 2 {
+        Cli::parse_from(["", "--help"]);
+    }
+
     let config = Cli::parse();
 
     initialize();
