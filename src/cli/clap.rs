@@ -22,4 +22,8 @@ pub struct Cli {
     /// List connected display ID's and settings. Defaults to false.
     #[clap(short, long)]
     pub list: bool,
+
+    /// Refresh rate. Defaults to current refresh rate
+    #[clap(short, long)]
+    pub refresh: Option<u32>,
 }

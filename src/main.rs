@@ -24,7 +24,18 @@ fn main() -> crate::cli::error::Result<()> {
     }
 
     let display_index: usize = match config.display {
-        Some(id) => id as usize,
+        Some(id) => {
+            let mut index = 0;
+            display_configs.iter().find(|x| {
+                if x.target_info.display_id == id {
+                    true
+                } else {
+                    index += 1;
+                    false
+                }
+            });
+            index
+        }
         None => {
             let mut index = 0;
             display_configs.iter().find(|x| {
@@ -58,10 +69,14 @@ fn main() -> crate::cli::error::Result<()> {
             Scaling::from_str(&scaling)? as i32;
     }
 
-    set_display_config(&mut display_configs);
-    let handles = nvapi::handle::get_display_handles();
-    println!("{:?}", handles);
-    println!("{}", get_display_name(handles[0]));
+    if let Some(refresh) = config.refresh {
+        display_configs[display_index]
+            .target_info
+            .details
+            .refreshRate1K = refresh * 1000;
+    }
+
+    set_display_config(&mut display_configs)?;
 
     Ok(())
 }
