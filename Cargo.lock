@@ -224,9 +224,7 @@ dependencies = [
 
 [[package]]
 name = "nvapi_sys_new"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "082dbce9ec514791111865d4cfa245ce202168a528637318f589a6712c1df013"
+version = "0.1.2"
 dependencies = [
  "bindgen",
 ]
