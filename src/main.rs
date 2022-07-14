@@ -1,6 +1,10 @@
 use std::str::FromStr;
 
 use clap::Parser;
+use nvapi::{
+    general::{initialize, unload},
+    vio::get_topologies,
+};
 
 use crate::{
     cli::clap::Cli,
@@ -13,13 +17,18 @@ pub mod nvapi;
 fn main() -> crate::cli::error::Result<()> {
     let config = Cli::parse();
 
-    nvapi::general::initialize();
+    initialize();
     let mut display_configs = nvapi::display::get_display_config()?;
 
     if config.list {
         for config in display_configs.iter() {
             println!("{}", config);
         }
+
+        let tops = get_topologies();
+        print!("{:?}", &tops);
+
+        unload();
         return Ok(());
     }
 
@@ -78,5 +87,6 @@ fn main() -> crate::cli::error::Result<()> {
 
     set_display_config(&mut display_configs)?;
 
+    unload();
     Ok(())
 }

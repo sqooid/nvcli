@@ -1,10 +1,16 @@
 use std::fmt::Display;
 
-use nvapi_sys_new::{NvAPI_GetErrorMessage, NvAPI_Initialize, _NvAPI_Status};
+use nvapi_sys_new::{NvAPI_GetErrorMessage, NvAPI_Initialize, NvAPI_Unload, _NvAPI_Status};
 
 pub fn initialize() {
     unsafe {
         NvAPI_Initialize();
+    }
+}
+
+pub fn unload() {
+    unsafe {
+        NvAPI_Unload();
     }
 }
 
