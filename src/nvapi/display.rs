@@ -1,11 +1,14 @@
 use std::fmt::Display;
 
 use nvapi_sys_new::{
-    make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_GPU_GetConnectedDisplayIds,
-    NvPhysicalGpuHandle, NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO,
-    NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO_V1, NV_DISPLAYCONFIG_PATH_INFO,
-    NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2, NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1, NV_GPU_DISPLAYIDS,
+    make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_DISP_SetDisplayConfig,
+    NvAPI_GPU_GetConnectedDisplayIds, NvPhysicalGpuHandle,
+    NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO, NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO_V1,
+    NV_DISPLAYCONFIG_PATH_INFO, NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2,
+    NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1, NV_GPU_DISPLAYIDS,
 };
+
+use crate::cli::error::Result;
 
 use super::scaling::Scaling;
 
@@ -31,7 +34,7 @@ pub fn get_display_ids(gpu_handle: NvPhysicalGpuHandle) -> Vec<NV_GPU_DISPLAYIDS
     display_ids
 }
 
-pub fn get_display_config() -> Vec<NvDisplayConfigPathInfo> {
+pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     let mut path_info_count: u32 = 0;
     // Get count
     unsafe {
@@ -53,26 +56,22 @@ pub fn get_display_config() -> Vec<NvDisplayConfigPathInfo> {
     unsafe {
         NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
     }
-    let mut target_info_array = vec![];
-    let mut advanced_target_info_array = vec![];
+    let mut target_info_array: Vec<NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2> = vec![];
+    let mut advanced_target_info_array: Vec<NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO> = vec![];
     for info in path_info.iter_mut() {
         advanced_target_info_array.push(NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO {
             version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO>(1),
             ..NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO::default()
         });
-        target_info_array.push(vec![
-            NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
-                details: advanced_target_info_array
-                    .last_mut()
-                    .expect("Advanced target info array missing items"),
-                ..NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2::default()
-            };
-            info.targetInfoCount as usize
-        ]);
+        target_info_array.push(NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
+            details: advanced_target_info_array
+                .last_mut()
+                .expect("Advanced target info array missing items"),
+            ..NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2::default()
+        });
         info.targetInfo = target_info_array
             .last_mut()
-            .expect("Target info array missing items")
-            .as_mut_ptr();
+            .expect("Target info array missing items");
     }
     // Get target info
     unsafe {
@@ -83,32 +82,56 @@ pub fn get_display_config() -> Vec<NvDisplayConfigPathInfo> {
     let mut output = vec![];
     for (i, info) in path_info.into_iter().enumerate() {
         output.push(NvDisplayConfigPathInfo {
-            target_info_count: info.targetInfoCount,
-            target_info: target_info_array[i]
-                .iter()
-                .map(|x| NvDisplayConfigPathTargetInfo {
-                    display_id: x.displayId,
-                    details: advanced_target_info_array[i],
-                    target_id: x.targetId,
-                })
-                .collect(),
+            target_info: NvDisplayConfigPathTargetInfo {
+                display_id: target_info_array[i].displayId,
+                details: advanced_target_info_array[i],
+            },
             source_mode_info: source_mode_info[i],
         });
     }
-    output
+    Ok(output)
+}
+
+pub fn set_display_config(config: &mut Vec<NvDisplayConfigPathInfo>) {
+    let mut target_info: Vec<NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2> = config
+        .iter_mut()
+        .map(|x| NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
+            displayId: x.target_info.display_id,
+            details: &mut x.target_info.details,
+            ..Default::default()
+        })
+        .collect();
+    let mut index: usize = 0;
+    let mut path_info: Vec<NV_DISPLAYCONFIG_PATH_INFO> = config
+        .iter_mut()
+        .map(|x| {
+            let info = NV_DISPLAYCONFIG_PATH_INFO {
+                version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_INFO>(2),
+                sourceModeInfo: &mut x.source_mode_info,
+                targetInfoCount: 1,
+                targetInfo: &mut target_info[index],
+                ..Default::default()
+            };
+            index += 1;
+            info
+        })
+        .collect();
+    println!("{:?}", path_info[1].targetInfo);
+    unsafe {
+        let result = NvAPI_DISP_SetDisplayConfig(config.len() as u32, path_info.as_mut_ptr(), 0);
+        println!("Set result: {}", result);
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct NvDisplayConfigPathInfo {
-    pub target_info_count: u32,
-    pub target_info: Vec<NvDisplayConfigPathTargetInfo>,
+    pub target_info: NvDisplayConfigPathTargetInfo,
     pub source_mode_info: NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1,
 }
 #[derive(Debug, Clone)]
 pub struct NvDisplayConfigPathTargetInfo {
     pub display_id: u32,
     pub details: NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO,
-    pub target_id: u32,
 }
 
 impl Display for NvDisplayConfigPathInfo {
@@ -122,12 +145,7 @@ Resolution: {} x {}
 Refresh rate: {} Hz
 Color depth: {} bits
 Scaling: {}"#,
-            // if self.target_info[0].details.primary() == 1 {
-            //     "true"
-            // } else {
-            //     "false"
-            // },
-            self.target_info[0].display_id,
+            self.target_info.display_id,
             if self.source_mode_info.bGDIPrimary() == 0 {
                 "true"
             } else {
@@ -135,9 +153,9 @@ Scaling: {}"#,
             },
             self.source_mode_info.resolution.width,
             self.source_mode_info.resolution.height,
-            self.target_info[0].details.refreshRate1K / 1000,
+            self.target_info.details.refreshRate1K / 1000,
             self.source_mode_info.resolution.colorDepth,
-            Scaling::from(self.target_info[0].details.scaling)
+            Scaling::from(self.target_info.details.scaling)
         )
     }
 }
