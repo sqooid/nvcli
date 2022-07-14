@@ -3,7 +3,7 @@ use nvapi_sys_new::{
     _NvAPI_Status_NVAPI_OK,
 };
 
-use crate::cli::error::Result;
+
 
 pub fn get_display_handles() -> Vec<NvDisplayHandle> {
     let mut display_handles: Vec<NvDisplayHandle> = vec![];

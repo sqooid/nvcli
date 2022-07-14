@@ -3,7 +3,7 @@ use std::fmt::Display;
 use nvapi_sys_new::{
     make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_DISP_SetDisplayConfig,
     NvAPI_GPU_GetConnectedDisplayIds, NvPhysicalGpuHandle, _NvAPI_Status_NVAPI_OK,
-    NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO, NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO_V1,
+    NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO,
     NV_DISPLAYCONFIG_PATH_INFO, NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2,
     NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1, NV_GPU_DISPLAYIDS,
 };
@@ -80,7 +80,7 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
 
     // Collect outputs
     let mut output = vec![];
-    for (i, info) in path_info.into_iter().enumerate() {
+    for (i, _info) in path_info.into_iter().enumerate() {
         output.push(NvDisplayConfigPathInfo {
             target_info: NvDisplayConfigPathTargetInfo {
                 display_id: target_info_array[i].displayId,
