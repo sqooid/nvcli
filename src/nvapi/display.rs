@@ -12,7 +12,7 @@ use crate::cli::error::Result;
 
 use super::scaling::Scaling;
 
-pub fn get_display_ids(gpu_handle: NvPhysicalGpuHandle) -> Vec<NV_GPU_DISPLAYIDS> {
+pub unsafe fn get_display_ids(gpu_handle: NvPhysicalGpuHandle) -> Vec<NV_GPU_DISPLAYIDS> {
     let mut display_ids: Vec<NV_GPU_DISPLAYIDS>;
     let mut display_count: u32 = 0;
     unsafe {

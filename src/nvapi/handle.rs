@@ -18,7 +18,7 @@ pub fn get_display_handles() -> Vec<NvDisplayHandle> {
     display_handles
 }
 
-pub fn get_display_name(handle: NvDisplayHandle) -> String {
+pub unsafe fn get_display_name(handle: NvDisplayHandle) -> String {
     let mut buffer: [i8; 64] = [0; 64];
     unsafe {
         NvAPI_GetAssociatedNvidiaDisplayName(handle, buffer.as_mut_ptr());

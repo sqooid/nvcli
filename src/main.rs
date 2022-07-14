@@ -4,7 +4,7 @@ use clap::Parser;
 
 use crate::{
     cli::clap::Cli,
-    nvapi::{display::set_display_config, handle::get_display_name, scaling::Scaling},
+    nvapi::{display::set_display_config, scaling::Scaling},
 };
 
 pub mod cli;
@@ -13,7 +13,7 @@ pub mod nvapi;
 fn main() -> crate::cli::error::Result<()> {
     let config = Cli::parse();
 
-    nvapi::nvapi::initialize();
+    nvapi::general::initialize();
     let mut display_configs = nvapi::display::get_display_config()?;
 
     if config.list {
