@@ -146,7 +146,7 @@ Refresh rate: {} Hz
 Color depth: {} bits
 Scaling: {}"#,
             self.target_info.display_id,
-            if self.source_mode_info.bGDIPrimary() == 0 {
+            if self.source_mode_info.bGDIPrimary() == 1 {
                 "true"
             } else {
                 "false"

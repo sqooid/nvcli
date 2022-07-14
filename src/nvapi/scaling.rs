@@ -1,6 +1,7 @@
 use std::{fmt::Display, str::FromStr};
 
 #[derive(Debug)]
+#[repr(i32)]
 pub enum Scaling {
     Default = 0,
     BalancedFullScreen = 1,
