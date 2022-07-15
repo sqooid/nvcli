@@ -1,3 +1,7 @@
+pub mod cli;
+pub mod nvapi;
+pub mod windows;
+
 use std::str::FromStr;
 
 use clap::Parser;
@@ -11,9 +15,6 @@ use crate::{
     nvapi::display::Output,
     nvapi::{display::set_display_config, scaling::Scaling},
 };
-
-pub mod cli;
-pub mod nvapi;
 
 fn main() -> crate::cli::error::Result<()> {
     if std::env::args().len() < 2 {

@@ -52,8 +52,6 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
         });
     }
 
-    let mut path_info = path_info.into_boxed_slice();
-
     unsafe {
         NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
     }
@@ -82,25 +80,10 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     }
 
     // Collect outputs
-    let mut output = vec![];
-    for (i, info) in path_info.into_iter().enumerate() {
-        let mut targets: Vec<NvDisplayConfigPathTargetInfo> = vec![];
-        unsafe {
-            for target in std::slice::from_raw_parts(info.targetInfo, info.targetInfoCount as usize)
-            {
-                targets.push(NvDisplayConfigPathTargetInfo {
-                    display_id: target.displayId,
-                    details: Box::from_raw(target.details),
-                    target_id: target.targetId,
-                });
-            }
-            output.push(NvDisplayConfigPathInfo {
-                target_info: targets,
-                source_mode_info: Box::from_raw(info.sourceModeInfo),
-                is_non_nvidia_adapter: info.IsNonNVIDIAAdapter() == 1,
-            });
-        }
-    }
+    let output: Vec<NvDisplayConfigPathInfo> = path_info
+        .into_iter()
+        .map(|x| NvDisplayConfigPathInfo::from(x))
+        .collect();
     Ok(output)
 }
 
@@ -193,6 +176,27 @@ impl From<NvDisplayConfigPathInfo> for NV_DISPLAYCONFIG_PATH_INFO {
             targetInfo: Box::into_raw(targets.into_boxed_slice())
                 as *mut NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2,
             ..Default::default()
+        }
+    }
+}
+
+impl From<NV_DISPLAYCONFIG_PATH_INFO> for NvDisplayConfigPathInfo {
+    fn from(info: NV_DISPLAYCONFIG_PATH_INFO) -> Self {
+        let mut targets: Vec<NvDisplayConfigPathTargetInfo> = vec![];
+        unsafe {
+            for target in std::slice::from_raw_parts(info.targetInfo, info.targetInfoCount as usize)
+            {
+                targets.push(NvDisplayConfigPathTargetInfo {
+                    display_id: target.displayId,
+                    details: Box::from_raw(target.details),
+                    target_id: target.targetId,
+                });
+            }
+            NvDisplayConfigPathInfo {
+                target_info: targets,
+                source_mode_info: Box::from_raw(info.sourceModeInfo),
+                is_non_nvidia_adapter: info.IsNonNVIDIAAdapter() == 1,
+            }
         }
     }
 }
