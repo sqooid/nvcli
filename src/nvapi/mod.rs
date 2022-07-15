@@ -1,4 +1,5 @@
 pub mod display;
+pub mod free;
 pub mod gamma;
 pub mod general;
 pub mod gpu;

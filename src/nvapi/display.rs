@@ -1,3 +1,4 @@
+use colored::*;
 use std::fmt::Display;
 
 use nvapi_sys_new::{
@@ -40,38 +41,41 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
         NvAPI_DISP_GetDisplayConfig(&mut path_info_count, std::ptr::null_mut());
     }
     // Allocate path info
-    let mut path_info = vec![
-        NV_DISPLAYCONFIG_PATH_INFO {
+    let mut path_info = vec![];
+    for _ in 0..path_info_count {
+        path_info.push(NV_DISPLAYCONFIG_PATH_INFO {
             version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_INFO>(2),
+            sourceModeInfo: Box::into_raw(
+                Box::new(NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1::default()),
+            ),
             ..Default::default()
-        };
-        path_info_count as usize
-    ];
-    let mut source_mode_info =
-        vec![NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1::default(); path_info_count as usize];
-    for (i, info) in path_info.iter_mut().enumerate() {
-        info.sourceModeInfo = &mut source_mode_info[i];
+        });
     }
+
+    let mut path_info = path_info.into_boxed_slice();
+
     unsafe {
         NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
     }
-    let mut target_info_array: Vec<NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2> = vec![];
-    let mut advanced_target_info_array: Vec<NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO> = vec![];
+
     for info in path_info.iter_mut() {
-        advanced_target_info_array.push(NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO {
-            version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO>(1),
-            ..NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO::default()
-        });
-        target_info_array.push(NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
-            details: advanced_target_info_array
-                .last_mut()
-                .expect("Advanced target info array missing items"),
-            ..NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2::default()
-        });
-        info.targetInfo = target_info_array
-            .last_mut()
-            .expect("Target info array missing items");
+        info.targetInfo = Box::into_raw(
+            vec![
+                NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
+                    details: Box::into_raw(Box::new(NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO {
+                        version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO>(
+                            1
+                        ),
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                };
+                info.targetInfoCount as usize
+            ]
+            .into_boxed_slice(),
+        ) as *mut NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2;
     }
+
     // Get target info
     unsafe {
         NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
@@ -79,45 +83,35 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
 
     // Collect outputs
     let mut output = vec![];
-    for (i, _info) in path_info.into_iter().enumerate() {
-        output.push(NvDisplayConfigPathInfo {
-            target_info: NvDisplayConfigPathTargetInfo {
-                display_id: target_info_array[i].displayId,
-                details: advanced_target_info_array[i],
-            },
-            source_mode_info: source_mode_info[i],
-        });
+    for (i, info) in path_info.into_iter().enumerate() {
+        let mut targets: Vec<NvDisplayConfigPathTargetInfo> = vec![];
+        unsafe {
+            for target in std::slice::from_raw_parts(info.targetInfo, info.targetInfoCount as usize)
+            {
+                targets.push(NvDisplayConfigPathTargetInfo {
+                    display_id: target.displayId,
+                    details: Box::from_raw(target.details),
+                    target_id: target.targetId,
+                });
+            }
+            output.push(NvDisplayConfigPathInfo {
+                target_info: targets,
+                source_mode_info: Box::from_raw(info.sourceModeInfo),
+                is_non_nvidia_adapter: info.IsNonNVIDIAAdapter() == 1,
+            });
+        }
     }
     Ok(output)
 }
 
-pub fn set_display_config(config: &mut Vec<NvDisplayConfigPathInfo>) -> Result<()> {
-    let mut target_info: Vec<NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2> = config
-        .iter_mut()
-        .map(|x| NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
-            displayId: x.target_info.display_id,
-            details: &mut x.target_info.details,
-            ..Default::default()
-        })
-        .collect();
-    let mut index: usize = 0;
-    let mut path_info: Vec<NV_DISPLAYCONFIG_PATH_INFO> = config
-        .iter_mut()
-        .map(|x| {
-            let info = NV_DISPLAYCONFIG_PATH_INFO {
-                version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_INFO>(2),
-                sourceModeInfo: &mut x.source_mode_info,
-                targetInfoCount: 1,
-                targetInfo: &mut target_info[index],
-                ..Default::default()
-            };
-            index += 1;
-            info
-        })
+pub fn set_display_config(config: Vec<NvDisplayConfigPathInfo>) -> Result<()> {
+    let mut config: Vec<NV_DISPLAYCONFIG_PATH_INFO> = config
+        .into_iter()
+        .map(|x| NV_DISPLAYCONFIG_PATH_INFO::from(x))
         .collect();
     let result;
     unsafe {
-        result = NvAPI_DISP_SetDisplayConfig(config.len() as u32, path_info.as_mut_ptr(), 0);
+        result = NvAPI_DISP_SetDisplayConfig(config.len() as u32, config.as_mut_ptr(), 0);
     }
     if result != _NvAPI_Status_NVAPI_OK {
         Err(format!(
@@ -131,27 +125,27 @@ pub fn set_display_config(config: &mut Vec<NvDisplayConfigPathInfo>) -> Result<(
 
 #[derive(Debug, Clone)]
 pub struct NvDisplayConfigPathInfo {
-    pub target_info: NvDisplayConfigPathTargetInfo,
-    pub source_mode_info: NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1,
+    pub target_info: Vec<NvDisplayConfigPathTargetInfo>,
+    pub source_mode_info: Box<NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1>,
+    pub is_non_nvidia_adapter: bool,
 }
 #[derive(Debug, Clone)]
 pub struct NvDisplayConfigPathTargetInfo {
     pub display_id: u32,
-    pub details: NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO,
+    pub details: Box<NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO>,
+    pub target_id: u32,
 }
 
-impl Display for NvDisplayConfigPathInfo {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            r#"
-ID: {}
-Primary: {}
-Resolution: {} x {}
-Refresh rate: {} Hz
-Color depth: {} bits
-Scaling: {}"#,
-            self.target_info.display_id,
+pub trait Output {
+    fn short_display(&self) -> String;
+    fn long_display(&self) -> String;
+}
+
+impl Output for NvDisplayConfigPathInfo {
+    fn short_display(&self) -> String {
+        let mut output = format!(
+            "{}\nPrimary: {}\nResolution: {}x{}\nPosition: ({},{})",
+            "Source".bold().blue(),
             if self.source_mode_info.bGDIPrimary() == 1 {
                 "true"
             } else {
@@ -159,9 +153,46 @@ Scaling: {}"#,
             },
             self.source_mode_info.resolution.width,
             self.source_mode_info.resolution.height,
-            self.target_info.details.refreshRate1K / 1000,
-            self.source_mode_info.resolution.colorDepth,
-            Scaling::from(self.target_info.details.scaling)
-        )
+            self.source_mode_info.position.x,
+            self.source_mode_info.position.y,
+        );
+        for (i, target) in self.target_info.iter().enumerate() {
+            let target_output = format!(
+                "{} {}\nID: {}\nRefresh rate: {} Hz\nScaling: {}",
+                "Target".green().bold(),
+                (i + 1).to_string().green().bold(),
+                target.display_id,
+                target.details.refreshRate1K / 1000,
+                Scaling::from(target.details.scaling)
+            );
+            output.push('\n');
+            output.push_str(&target_output);
+        }
+        output
+    }
+
+    fn long_display(&self) -> String {
+        todo!()
+    }
+}
+
+impl From<NvDisplayConfigPathInfo> for NV_DISPLAYCONFIG_PATH_INFO {
+    fn from(e: NvDisplayConfigPathInfo) -> Self {
+        let mut targets: Vec<NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2> = vec![];
+        for target in e.target_info {
+            targets.push(NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2 {
+                displayId: target.display_id,
+                details: Box::into_raw(target.details),
+                targetId: target.target_id,
+            });
+        }
+        NV_DISPLAYCONFIG_PATH_INFO {
+            version: make_nvapi_version::<NV_DISPLAYCONFIG_PATH_INFO>(2),
+            sourceModeInfo: Box::into_raw(e.source_mode_info),
+            targetInfoCount: targets.len() as u32,
+            targetInfo: Box::into_raw(targets.into_boxed_slice())
+                as *mut NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2,
+            ..Default::default()
+        }
     }
 }

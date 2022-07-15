@@ -8,6 +8,7 @@ use nvapi::{
 
 use crate::{
     cli::clap::Cli,
+    nvapi::display::Output,
     nvapi::{display::set_display_config, scaling::Scaling},
 };
 
@@ -26,70 +27,77 @@ fn main() -> crate::cli::error::Result<()> {
 
     if config.list {
         for config in display_configs.iter() {
-            println!("{}", config);
+            println!("{}\n", config.short_display());
         }
-
-        let tops = get_topologies();
-        print!("{:?}", &tops);
 
         unload();
         return Ok(());
     }
 
-    let display_index: usize = match config.display {
+    let mut display_idx: [usize; 2] = [0, 0];
+    match config.display {
         Some(id) => {
-            let mut index = 0;
-            display_configs.iter().find(|x| {
-                if x.target_info.display_id == id {
-                    true
-                } else {
-                    index += 1;
+            display_configs.iter().find(|info| {
+                if info
+                    .target_info
+                    .iter()
+                    .find(|target| {
+                        if target.display_id == id {
+                            true
+                        } else {
+                            display_idx[1] += 1;
+                            false
+                        }
+                    })
+                    .is_none()
+                {
+                    display_idx[0] += 1;
+                    display_idx[1] = 0;
                     false
+                } else {
+                    true
                 }
             });
-            index
         }
         None => {
-            let mut index = 0;
             display_configs.iter().find(|x| {
                 if x.source_mode_info.bGDIPrimary() == 1 {
                     true
                 } else {
-                    index += 1;
+                    display_idx[0] += 1;
                     false
                 }
             });
-            index
         }
     };
 
     if let Some(width) = config.width {
-        display_configs[display_index]
+        display_configs[display_idx[0]]
             .source_mode_info
             .resolution
             .width = width;
     }
 
     if let Some(height) = config.height {
-        display_configs[display_index]
+        display_configs[display_idx[0]]
             .source_mode_info
             .resolution
             .height = height;
     }
 
     if let Some(scaling) = config.scaling {
-        display_configs[display_index].target_info.details.scaling =
-            Scaling::from_str(&scaling)? as i32;
+        display_configs[display_idx[0]].target_info[display_idx[1]]
+            .details
+            .scaling = Scaling::from_str(&scaling)? as i32;
     }
 
     if let Some(refresh) = config.refresh {
-        display_configs[display_index]
-            .target_info
+        display_configs[display_idx[0]].target_info[display_idx[1]]
             .details
             .refreshRate1K = refresh * 1000;
     }
 
-    set_display_config(&mut display_configs)?;
+    set_display_config(display_configs)?;
 
     unload();
     Ok(())
