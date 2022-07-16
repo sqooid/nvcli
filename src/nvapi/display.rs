@@ -8,7 +8,7 @@ use nvapi_sys_new::{
 
 use crate::cli::error::Result;
 
-use super::{general::get_status_message, scaling::Scaling};
+use super::{general::get_status_message, rotation::Rotation, scaling::Scaling};
 
 pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     let mut path_info_count: u32 = 0;
@@ -130,12 +130,13 @@ impl Output for NvDisplayConfigPathInfo {
         );
         for (i, target) in self.target_info.iter().enumerate() {
             let target_output = format!(
-                "{} {}\nID: {}\nRefresh rate: {} Hz\nScaling: {}",
+                "{} {}\nID: {}\nRefresh rate: {} Hz\nScaling: {}\nRotation: {}",
                 "Target".green().bold(),
                 (i + 1).to_string().green().bold(),
                 target.display_id,
                 target.details.refreshRate1K / 1000,
-                Scaling::from(target.details.scaling)
+                Scaling::from(target.details.scaling),
+                Rotation(target.details.rotation)
             );
             output.push('\n');
             output.push_str(&target_output);

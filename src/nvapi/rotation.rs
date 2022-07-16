@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 pub struct Rotation(pub i32);
 
 impl TryFrom<&u32> for Rotation {
@@ -11,5 +13,21 @@ impl TryFrom<&u32> for Rotation {
             270 => Ok(Self(3)),
             _ => Err("Invalid rotation value".to_string()),
         }
+    }
+}
+
+impl Display for Rotation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self.0 {
+                0 => "0",
+                90 => "90",
+                180 => "180",
+                270 => "270",
+                _ => "Invalid",
+            }
+        )
     }
 }
