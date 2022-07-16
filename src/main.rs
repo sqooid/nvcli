@@ -97,14 +97,14 @@ fn main() {
         }
     };
 
-    if let Some(width) = &config.width {
+    if let Some(width) = &config.resolution_x {
         display_configs[display_idx[0]]
             .source_mode_info
             .resolution
             .width = width.to_owned();
     }
 
-    if let Some(height) = &config.height {
+    if let Some(height) = &config.resolution_y {
         display_configs[display_idx[0]]
             .source_mode_info
             .resolution
@@ -124,16 +124,12 @@ fn main() {
         } as i32;
     }
 
-    if let Some(position) = &config.position {
-        let position = match Position::from_str(&position) {
-            Ok(pos) => pos,
-            Err(e) => {
-                println!("{}", e.red());
-                return;
-            }
-        };
-        display_configs[display_idx[0]].source_mode_info.position.x = position.x;
-        display_configs[display_idx[0]].source_mode_info.position.y = position.y;
+    if let Some(position_x) = &config.position_x {
+        display_configs[display_idx[0]].source_mode_info.position.x = position_x.clone();
+    }
+
+    if let Some(position_y) = &config.position_y {
+        display_configs[display_idx[0]].source_mode_info.position.y = position_y.clone();
     }
 
     if let Some(refresh) = &config.refresh {
