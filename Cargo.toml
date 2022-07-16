@@ -3,11 +3,11 @@ name = "nvcli"
 version = "0.1.0"
 edition = "2021"
 author = "sqooid"
-description = "Command line interface to change some Nvidia control panel settings"
+description = "Command line interface to change a number of Nvidia control panel display settings"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-nvapi_sys_new = {path="../nvapi"}
+nvapi_sys_new = "0.1.4"
 clap = {version="3.2.11", features=["derive"]}
 colored = "2.0.0"

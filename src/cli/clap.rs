@@ -11,7 +11,14 @@ pub struct Cli {
     #[clap(short, long)]
     pub height: Option<u32>,
 
-    /// Scaling setting. Defaults to current scaling setting.
+    /// Scaling setting. Defaults to current scaling setting. Valid values are:
+    /// bfs - balanced full screen,
+    /// ffs - forced full screen,
+    /// fc  - forced centered,
+    /// far - forced aspect ratio,
+    /// bar - balanced aspect ratio,
+    /// ba  - balanced centered,
+    /// fis - forced integer scaling
     #[clap(short, long)]
     pub scaling: Option<String>,
 
@@ -26,10 +33,6 @@ pub struct Cli {
     /// Refresh rate. Defaults to current refresh rate
     #[clap(short, long)]
     pub refresh: Option<u32>,
-
-    /// Gamma adjustment. Should be between 0.3 and 2.8
-    #[clap(short, long)]
-    pub gamma: Option<f32>,
 }
 
 impl Cli {
@@ -38,8 +41,5 @@ impl Cli {
             || self.height.is_some()
             || self.scaling.is_some()
             || self.refresh.is_some()
-    }
-    pub fn color_config_needed(&self) -> bool {
-        self.gamma.is_some()
     }
 }
