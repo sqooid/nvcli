@@ -4,6 +4,11 @@ version = "1.0.0"
 edition = "2021"
 authors = ["sqooid"]
 description = "Command line interface to change a number of Nvidia control panel display settings"
+documentation = "https://github.com/sqooid/nvcli"
+homepage = "https://github.com/sqooid/nvcli"
+repository = "https://github.com/sqooid/nvcli"
+license = "MIT"
+license_file = "license"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
