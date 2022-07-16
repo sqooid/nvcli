@@ -31,13 +31,13 @@ Gamma settings can be set by installing GeForce Experience and using Freestyle t
 Running `nvcli -l` will output something that looks like this:
 ```
 Source
-Primary: true					(Whether this source is the primary monitor)
-Resolution: 2560x1440			(The current resolution of this output)
-Position: (0,0)					(The current position of this monitor)
+Primary: true                   (Whether this source is the primary monitor)
+Resolution: 2560x1440           (The current resolution of this output)
+Position: (0,0)                 (The current position of this monitor)
 Target 1				
-ID: 2147881089					(The display id of this target, which is used to change which monitor settings are applied to)
-Refresh rate: 165 Hz			(The current refresh rate)
-Scaling: balanced full screen	(The current scaling mode)
+ID: 2147881089                  (The display id of this target, which is used to change which monitor settings are applied to)
+Refresh rate: 165 Hz            (The current refresh rate)
+Scaling: balanced full screen   (The current scaling mode)
 
 Source
 Primary: false
