@@ -44,6 +44,10 @@ pub struct Cli {
     /// y coordinate of monitor's top left corner.
     #[clap(short = 'Y', long)]
     pub position_y: Option<i32>,
+
+    /// Clockwise rotation of monitor in degrees. Valid values are 0, 90, 180 and 270. Defaults to current value.
+    #[clap(short = 'R', long)]
+    pub rotation: Option<u32>,
 }
 
 impl Cli {
@@ -54,5 +58,6 @@ impl Cli {
             || self.refresh.is_some()
             || self.position_x.is_some()
             || self.position_y.is_some()
+            || self.rotation.is_some()
     }
 }

@@ -8,6 +8,7 @@ use clap::Parser;
 use nvapi::{
     display::get_display_config,
     general::{initialize, unload},
+    rotation::Rotation,
 };
 
 use crate::{
@@ -135,6 +136,20 @@ fn main() {
         display_configs[display_idx[0]].target_info[display_idx[1]]
             .details
             .refreshRate1K = refresh * 1000;
+    }
+
+    if let Some(rotation) = &config.rotation {
+        let rotation = match Rotation::try_from(rotation) {
+            Ok(rot) => rot.0,
+            Err(e) => {
+                println!("{}", e.red());
+                unload();
+                return;
+            }
+        };
+        display_configs[display_idx[0]].target_info[display_idx[1]]
+            .details
+            .rotation = rotation;
     }
 
     if config.display_config_needed() {
