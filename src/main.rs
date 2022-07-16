@@ -85,7 +85,7 @@ fn main() -> crate::cli::error::Result<()> {
     if let Some(scaling) = &config.scaling {
         display_configs[display_idx[0]].target_info[display_idx[1]]
             .details
-            .scaling = Scaling::from_str(&scaling)? as i32;
+            .scaling = Scaling::from_str(scaling)? as i32;
     }
 
     if let Some(refresh) = &config.refresh {

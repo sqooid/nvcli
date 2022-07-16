@@ -19,7 +19,7 @@ pub fn get_status_message(status: &_NvAPI_Status) -> String {
         NvAPI_GetErrorMessage(*status, buffer.as_mut_ptr());
         str_buffer = std::mem::transmute::<[i8; 64], [u8; 64]>(buffer);
         let mut message = std::str::from_utf8_unchecked(&str_buffer).to_owned();
-        message.truncate(message.find("\0").unwrap_or(64));
+        message.truncate(message.find('\0').unwrap_or(64));
         message
     }
 }

@@ -1,10 +1,9 @@
 use colored::*;
 
 use nvapi_sys_new::{
-    make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_DISP_SetDisplayConfig,
-    NvAPI_GPU_GetConnectedDisplayIds, NvPhysicalGpuHandle, _NvAPI_Status_NVAPI_OK,
+    make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_DISP_SetDisplayConfig, _NvAPI_Status_NVAPI_OK,
     NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO, NV_DISPLAYCONFIG_PATH_INFO,
-    NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2, NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1, NV_GPU_DISPLAYIDS,
+    NV_DISPLAYCONFIG_PATH_TARGET_INFO_V2, NV_DISPLAYCONFIG_SOURCE_MODE_INFO_V1,
 };
 
 use crate::cli::error::Result;
@@ -59,7 +58,7 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     // Collect outputs
     let output: Vec<NvDisplayConfigPathInfo> = path_info
         .into_iter()
-        .map(|x| NvDisplayConfigPathInfo::from(x))
+        .map(NvDisplayConfigPathInfo::from)
         .collect();
     Ok(output)
 }
@@ -67,7 +66,7 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
 pub fn set_display_config(config: Vec<NvDisplayConfigPathInfo>) -> Result<()> {
     let mut config: Vec<NV_DISPLAYCONFIG_PATH_INFO> = config
         .into_iter()
-        .map(|x| NV_DISPLAYCONFIG_PATH_INFO::from(x))
+        .map(NV_DISPLAYCONFIG_PATH_INFO::from)
         .collect();
     let result;
     unsafe {
@@ -75,9 +74,9 @@ pub fn set_display_config(config: Vec<NvDisplayConfigPathInfo>) -> Result<()> {
     }
 
     // Change back for cleanup
-    let config: Vec<NvDisplayConfigPathInfo> = config
+    let _config: Vec<NvDisplayConfigPathInfo> = config
         .into_iter()
-        .map(|x| NvDisplayConfigPathInfo::from(x))
+        .map(NvDisplayConfigPathInfo::from)
         .collect();
 
     if result != _NvAPI_Status_NVAPI_OK {
