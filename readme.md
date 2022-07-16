@@ -69,6 +69,8 @@ Changing the refresh rate of a non-primary monitor with display id `2147881090` 
 nvcli -d 2147881090 -r 120
 ```
 
+### Changing position of secondary monitor
+
 # Notes
 
 Changing

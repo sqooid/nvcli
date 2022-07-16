@@ -8,7 +8,6 @@ use clap::Parser;
 use nvapi::{
     display::get_display_config,
     general::{initialize, unload},
-    position::Position,
 };
 
 use crate::{
