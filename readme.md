@@ -69,8 +69,17 @@ Changing the refresh rate of a non-primary monitor with display id `2147881090` 
 nvcli -d 2147881090 -r 120
 ```
 
-### Changing position of secondary monitor
+### Changing position/rotation of secondary monitor
 
-# Notes
-
-Changing
+If there are two monitors both of resolution 1920x1080, the following command would place the secondary monitor above the primary monitor:
+```
+nvcli -d 2147881090 -X 0 -Y=-1080
+```
+The following command would place the secondary monitor right beside the primary monitor on its right:
+```
+nvcli -d 2147881090 -X 1920 -Y 0
+```
+The following command would rotate the secondary monitor to vertical and place it centered above the primary monitor:
+```
+nvcli -d 2147881090 -R 90 -X 420 -Y=-1920
+```
