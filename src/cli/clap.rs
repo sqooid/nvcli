@@ -34,7 +34,9 @@ pub struct Cli {
     #[clap(short, long)]
     pub refresh: Option<u32>,
 
-    /// Position of monitor's bottom left corner in the form "x,y". Defaults to current value
+    /// Position of monitor's top left corner in the form "x,y".
+    /// "0,0" is located at the top left corner of the primary monitor.
+    /// Defaults to current value
     #[clap(short, long)]
     pub position: Option<String>,
 }
