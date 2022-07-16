@@ -2,7 +2,7 @@
 name = "nvcli"
 version = "0.1.0"
 edition = "2021"
-author = "sqooid"
+authors = ["sqooid"]
 description = "Command line interface to change a number of Nvidia control panel display settings"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
