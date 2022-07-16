@@ -36,7 +36,8 @@ pub struct Cli {
 
     /// x coordinate of monitor's top left corner.
     /// (0,0) is located at the top left corner of the primary monitor.
-    /// Negative values must be specified using "=" e.g. `-X=-1080`
+    /// Negative values must be specified using "=" e.g. `-X=-1080`.
+    /// If a collision is detected the monitor is placed in its default position.
     /// Defaults to current value
     #[clap(short = 'X', long)]
     pub position_x: Option<i32>,
