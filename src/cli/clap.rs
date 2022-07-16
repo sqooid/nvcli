@@ -33,6 +33,10 @@ pub struct Cli {
     /// Refresh rate. Defaults to current refresh rate
     #[clap(short, long)]
     pub refresh: Option<u32>,
+
+    /// Position of monitor's bottom left corner in the form "x,y". Defaults to current value
+    #[clap(short, long)]
+    pub position: Option<String>,
 }
 
 impl Cli {
@@ -41,5 +45,6 @@ impl Cli {
             || self.height.is_some()
             || self.scaling.is_some()
             || self.refresh.is_some()
+            || self.position.is_some()
     }
 }

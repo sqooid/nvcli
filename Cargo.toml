@@ -8,7 +8,7 @@ documentation = "https://github.com/sqooid/nvcli"
 homepage = "https://github.com/sqooid/nvcli"
 repository = "https://github.com/sqooid/nvcli"
 license = "MIT"
-license_file = "license"
+license-file = "license"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

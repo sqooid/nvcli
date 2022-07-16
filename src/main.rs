@@ -8,6 +8,7 @@ use clap::Parser;
 use nvapi::{
     display::get_display_config,
     general::{initialize, unload},
+    position::Position,
 };
 
 use crate::{
@@ -46,37 +47,53 @@ fn main() {
     let mut display_idx: [usize; 2] = [0, 0];
     match config.display {
         Some(id) => {
-            display_configs.iter().find(|info| {
-                if info
-                    .target_info
-                    .iter()
-                    .find(|target| {
-                        if target.display_id == id {
-                            true
-                        } else {
-                            display_idx[1] += 1;
-                            false
-                        }
-                    })
-                    .is_none()
-                {
-                    display_idx[0] += 1;
-                    display_idx[1] = 0;
-                    false
-                } else {
-                    true
-                }
-            });
+            if display_configs
+                .iter()
+                .find(|info| {
+                    if info
+                        .target_info
+                        .iter()
+                        .find(|target| {
+                            if target.display_id == id {
+                                true
+                            } else {
+                                display_idx[1] += 1;
+                                false
+                            }
+                        })
+                        .is_none()
+                    {
+                        display_idx[0] += 1;
+                        display_idx[1] = 0;
+                        false
+                    } else {
+                        true
+                    }
+                })
+                .is_none()
+            {
+                println!("{}", "Display with specified ID not found".red());
+                unload();
+                return;
+            };
         }
         None => {
-            display_configs.iter().find(|x| {
-                if x.source_mode_info.bGDIPrimary() == 1 {
-                    true
-                } else {
-                    display_idx[0] += 1;
-                    false
-                }
-            });
+            if display_configs
+                .iter()
+                .find(|x| {
+                    if x.source_mode_info.bGDIPrimary() == 1 {
+                        true
+                    } else {
+                        display_idx[0] += 1;
+                        false
+                    }
+                })
+                .is_none()
+            {
+                println!("{}", "No primary display found".red());
+                unload();
+                return;
+            };
         }
     };
 
@@ -105,6 +122,18 @@ fn main() {
                 return;
             }
         } as i32;
+    }
+
+    if let Some(position) = &config.position {
+        let position = match Position::from_str(&position) {
+            Ok(pos) => pos,
+            Err(e) => {
+                println!("{}", e.red());
+                return;
+            }
+        };
+        display_configs[display_idx[0]].source_mode_info.position.x = position.x;
+        display_configs[display_idx[0]].source_mode_info.position.y = position.y;
     }
 
     if let Some(refresh) = &config.refresh {
