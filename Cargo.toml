@@ -11,3 +11,4 @@ description = "Command line interface to change some Nvidia control panel settin
 nvapi_sys_new = {path="../nvapi"}
 clap = {version="3.2.11", features=["derive"]}
 colored = "2.0.0"
+windows = {version="0.38.0", features=["Win32_UI_ColorSystem","Win32_Foundation","Win32_Graphics_Gdi","Win32_Graphics_Direct3D9"]}

@@ -1,5 +1,4 @@
 use colored::*;
-use std::fmt::Display;
 
 use nvapi_sys_new::{
     make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_DISP_SetDisplayConfig,
@@ -11,28 +10,6 @@ use nvapi_sys_new::{
 use crate::cli::error::Result;
 
 use super::{general::get_status_message, scaling::Scaling};
-
-pub unsafe fn get_display_ids(gpu_handle: NvPhysicalGpuHandle) -> Vec<NV_GPU_DISPLAYIDS> {
-    let mut display_ids: Vec<NV_GPU_DISPLAYIDS>;
-    let mut display_count: u32 = 0;
-    unsafe {
-        NvAPI_GPU_GetConnectedDisplayIds(gpu_handle, std::ptr::null_mut(), &mut display_count, 0);
-        display_ids = vec![
-            NV_GPU_DISPLAYIDS {
-                version: make_nvapi_version::<NV_GPU_DISPLAYIDS>(3),
-                ..NV_GPU_DISPLAYIDS::default()
-            };
-            display_count as usize
-        ];
-        NvAPI_GPU_GetConnectedDisplayIds(
-            gpu_handle,
-            display_ids.as_mut_ptr(),
-            &mut display_count,
-            0,
-        );
-    }
-    display_ids
-}
 
 pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     let mut path_info_count: u32 = 0;
@@ -96,6 +73,13 @@ pub fn set_display_config(config: Vec<NvDisplayConfigPathInfo>) -> Result<()> {
     unsafe {
         result = NvAPI_DISP_SetDisplayConfig(config.len() as u32, config.as_mut_ptr(), 0);
     }
+
+    // Change back for cleanup
+    let config: Vec<NvDisplayConfigPathInfo> = config
+        .into_iter()
+        .map(|x| NvDisplayConfigPathInfo::from(x))
+        .collect();
+
     if result != _NvAPI_Status_NVAPI_OK {
         Err(format!(
             "Failed to apply settings: {}",

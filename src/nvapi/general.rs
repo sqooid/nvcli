@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use nvapi_sys_new::{NvAPI_GetErrorMessage, NvAPI_Initialize, NvAPI_Unload, _NvAPI_Status};
 
 pub fn initialize() {

@@ -1,14 +1,10 @@
 pub mod cli;
 pub mod nvapi;
-pub mod windows;
 
 use std::str::FromStr;
 
 use clap::Parser;
-use nvapi::{
-    general::{initialize, unload},
-    vio::get_topologies,
-};
+use nvapi::general::{initialize, unload};
 
 use crate::{
     cli::clap::Cli,
@@ -72,33 +68,35 @@ fn main() -> crate::cli::error::Result<()> {
         }
     };
 
-    if let Some(width) = config.width {
+    if let Some(width) = &config.width {
         display_configs[display_idx[0]]
             .source_mode_info
             .resolution
-            .width = width;
+            .width = width.to_owned();
     }
 
-    if let Some(height) = config.height {
+    if let Some(height) = &config.height {
         display_configs[display_idx[0]]
             .source_mode_info
             .resolution
-            .height = height;
+            .height = height.to_owned();
     }
 
-    if let Some(scaling) = config.scaling {
+    if let Some(scaling) = &config.scaling {
         display_configs[display_idx[0]].target_info[display_idx[1]]
             .details
             .scaling = Scaling::from_str(&scaling)? as i32;
     }
 
-    if let Some(refresh) = config.refresh {
+    if let Some(refresh) = &config.refresh {
         display_configs[display_idx[0]].target_info[display_idx[1]]
             .details
             .refreshRate1K = refresh * 1000;
     }
 
-    set_display_config(display_configs)?;
+    if config.display_config_needed() {
+        set_display_config(display_configs)?;
+    }
 
     unload();
     Ok(())

@@ -26,4 +26,20 @@ pub struct Cli {
     /// Refresh rate. Defaults to current refresh rate
     #[clap(short, long)]
     pub refresh: Option<u32>,
+
+    /// Gamma adjustment. Should be between 0.3 and 2.8
+    #[clap(short, long)]
+    pub gamma: Option<f32>,
+}
+
+impl Cli {
+    pub fn display_config_needed(&self) -> bool {
+        self.width.is_some()
+            || self.height.is_some()
+            || self.scaling.is_some()
+            || self.refresh.is_some()
+    }
+    pub fn color_config_needed(&self) -> bool {
+        self.gamma.is_some()
+    }
 }
