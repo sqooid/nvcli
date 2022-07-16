@@ -17,7 +17,7 @@ pub struct Cli {
     /// fc  - forced centered,
     /// far - forced aspect ratio,
     /// bar - balanced aspect ratio,
-    /// ba  - balanced centered,
+    /// bc  - balanced centered,
     /// fis - forced integer scaling
     #[clap(short, long)]
     pub scaling: Option<String>,

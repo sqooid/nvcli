@@ -5,7 +5,10 @@ use colored::*;
 use std::str::FromStr;
 
 use clap::Parser;
-use nvapi::general::{initialize, unload};
+use nvapi::{
+    display::get_display_config,
+    general::{initialize, unload},
+};
 
 use crate::{
     cli::clap::Cli,
@@ -13,7 +16,7 @@ use crate::{
     nvapi::{display::set_display_config, scaling::Scaling},
 };
 
-fn main() -> crate::cli::error::Result<()> {
+fn main() {
     if std::env::args().len() < 2 {
         Cli::parse_from(["", "--help"]);
     }
@@ -21,7 +24,15 @@ fn main() -> crate::cli::error::Result<()> {
     let config = Cli::parse();
 
     initialize();
-    let mut display_configs = nvapi::display::get_display_config()?;
+    let result = get_display_config();
+    let mut display_configs = match result {
+        Ok(configs) => configs,
+        Err(e) => {
+            println!("{}: {}", "Failed to get current display config".red(), e);
+            unload();
+            return;
+        }
+    };
 
     if config.list {
         for config in display_configs.iter() {
@@ -29,7 +40,7 @@ fn main() -> crate::cli::error::Result<()> {
         }
 
         unload();
-        return Ok(());
+        return;
     }
 
     let mut display_idx: [usize; 2] = [0, 0];
@@ -86,7 +97,14 @@ fn main() -> crate::cli::error::Result<()> {
     if let Some(scaling) = &config.scaling {
         display_configs[display_idx[0]].target_info[display_idx[1]]
             .details
-            .scaling = Scaling::from_str(scaling)? as i32;
+            .scaling = match Scaling::from_str(scaling) {
+            Ok(scaling) => scaling,
+            Err(_) => {
+                println!("{}", "Invalid scaling option".red());
+                unload();
+                return;
+            }
+        } as i32;
     }
 
     if let Some(refresh) = &config.refresh {
@@ -96,10 +114,14 @@ fn main() -> crate::cli::error::Result<()> {
     }
 
     if config.display_config_needed() {
-        set_display_config(display_configs)?;
-        println!("{}", "Successfully applied display settings".green());
+        let result = set_display_config(display_configs);
+        match result {
+            Ok(_) => println!("{}", "Successfully applied display settings".green()),
+            Err(e) => {
+                println!("{}: {}", "Failed to apply display config".red(), e);
+            }
+        };
     }
 
     unload();
-    Ok(())
 }

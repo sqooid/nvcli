@@ -24,7 +24,7 @@ impl FromStr for Scaling {
             "fc" => Ok(Self::ForcedCentered),
             "far" => Ok(Self::ForcedAspectRatio),
             "bar" => Ok(Self::BalancedAspectRatio),
-            "ba" => Ok(Self::BalancedCentered),
+            "bc" => Ok(Self::BalancedCentered),
             "fis" => Ok(Self::ForcedIntegerScaling),
             _ => Err("Invalid scaling argument".to_string()),
         }

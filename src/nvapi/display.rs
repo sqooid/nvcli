@@ -14,7 +14,10 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     let mut path_info_count: u32 = 0;
     // Get count
     unsafe {
-        NvAPI_DISP_GetDisplayConfig(&mut path_info_count, std::ptr::null_mut());
+        let result = NvAPI_DISP_GetDisplayConfig(&mut path_info_count, std::ptr::null_mut());
+        if result != 0 {
+            return Err(get_status_message(&result));
+        }
     }
     // Allocate path info
     let mut path_info = vec![];
@@ -29,7 +32,10 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
     }
 
     unsafe {
-        NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
+        let result = NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
+        if result != 0 {
+            return Err(get_status_message(&result));
+        }
     }
 
     for info in path_info.iter_mut() {
@@ -52,7 +58,10 @@ pub fn get_display_config() -> Result<Vec<NvDisplayConfigPathInfo>> {
 
     // Get target info
     unsafe {
-        NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
+        let result = NvAPI_DISP_GetDisplayConfig(&mut path_info_count, path_info.as_mut_ptr());
+        if result != 0 {
+            return Err(get_status_message(&result));
+        }
     }
 
     // Collect outputs
@@ -80,10 +89,7 @@ pub fn set_display_config(config: Vec<NvDisplayConfigPathInfo>) -> Result<()> {
         .collect();
 
     if result != _NvAPI_Status_NVAPI_OK {
-        Err(format!(
-            "Failed to apply settings: {}",
-            get_status_message(&result)
-        ))
+        Err(get_status_message(&result))
     } else {
         Ok(())
     }
