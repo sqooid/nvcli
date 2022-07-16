@@ -1,6 +1,7 @@
 pub mod cli;
 pub mod nvapi;
 
+use colored::*;
 use std::str::FromStr;
 
 use clap::Parser;
@@ -96,6 +97,7 @@ fn main() -> crate::cli::error::Result<()> {
 
     if config.display_config_needed() {
         set_display_config(display_configs)?;
+        println!("{}", "Successfully applied display settings".green());
     }
 
     unload();
