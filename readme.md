@@ -7,7 +7,7 @@ Note that this program only works on Windows computers.
 
 ## Installation
 
-The 64 bit binary can be downloaded from the releases page. In order to get a 32 bit installation, this must be built from source. This process can be simplified with cargo by running `cargo install nvcli`.
+The 64 bit binary can be downloaded from the releases page. In order to get a 32 bit installation, the project must be built from source. This process can be simplified with cargo by running `cargo install nvcli`.
 
 ## Usage
 
