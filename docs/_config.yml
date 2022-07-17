@@ -14,9 +14,17 @@ social:
     - "https://github.com/sqooid"
     - "https://www.linkedin.com/in/lucas-liu-a92859217"
 
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+
 author:
   name: "Lucas Liu"
-  avatar: ""
+  avatar: "https://avatars.githubusercontent.com/u/64120036"
   bio: "A computer science and electrical engineering student"
   location: "Melbourne, Australia"
   links:

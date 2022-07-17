@@ -1,2 +1,6 @@
 /target
 *.log
+_site/
+.bundle/
+.jekyll-cache/
+vendor/
