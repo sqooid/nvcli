@@ -1,0 +1,37 @@
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+minimal_mistakes_skin: "dark"
+plugins:
+  - jekyll-include-cache
+
+title: "nvcli"
+name: "Lucas Liu"
+description: "A cli interface to some features of the Nvidia control panel"
+repository: "sqooid/nvcli"
+google_site_verification: "NVEiESCtwdsS2FVZfDiBbTsgl4weDvpWrQbfnJ6VsYM"
+
+social:
+  links:
+    - "https://github.com/sqooid"
+    - "https://www.linkedin.com/in/lucas-liu-a92859217"
+
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+      title: About
+
+author:
+  name: "Lucas Liu"
+  avatar: "https://avatars.githubusercontent.com/u/64120036"
+  bio: "A computer science and electrical engineering student"
+  location: "Melbourne, Australia"
+  links:
+    - label: "Download"
+      icon: "fas fa-fw fa-download"
+      url: "https://github.com/sqooid/nvcli/releases"
+    - label: "Repository"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/sqooid/nvcli"

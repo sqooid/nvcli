@@ -3,7 +3,7 @@
 This is a tiny application that allows you to set your monitors' resolution, refresh rate, scaling mode, position and rotation in the command-line.
 Typically this would be done using the Nvidia control panel, but due to its lack of a cli interface, it is difficult to automate those changes.
 
-Note that this program only works on Windows computers.
+Note that this program only works on Windows computers. 
 
 ## Installation
 
@@ -86,7 +86,3 @@ The following command would rotate the secondary monitor to vertical and place i
 ```
 nvcli -d 2147881090 -R 90 -X 420 -Y=-1920
 ```
-
-## Notes
-
-Output color can be disabled by setting the environment variable `NO_COLOR=1`.
