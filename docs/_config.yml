@@ -4,6 +4,7 @@ plugins:
   - jekyll-include-cache
 
 author:
+  name: "Lucas Liu"
   links:
     - label: "Download"
       icon: "fas fa-fw fa-link"
