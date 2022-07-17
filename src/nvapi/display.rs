@@ -1,5 +1,3 @@
-use colored::*;
-
 use nvapi_sys_new::{
     make_nvapi_version, NvAPI_DISP_GetDisplayConfig, NvAPI_DISP_SetDisplayConfig,
     _NvAPI_Status_NVAPI_OK, NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO, NV_DISPLAYCONFIG_PATH_INFO,
@@ -109,15 +107,15 @@ pub struct NvDisplayConfigPathTargetInfo {
 }
 
 pub trait Output {
-    fn short_display(&self) -> String;
+    fn print_short(&self);
     fn long_display(&self) -> String;
 }
 
 impl Output for NvDisplayConfigPathInfo {
-    fn short_display(&self) -> String {
-        let mut output = format!(
-            "{}\nPrimary: {}\nResolution: {}x{}\nPosition: ({},{})",
-            "Source".bold().blue(),
+    fn print_short(&self) {
+        bunt::println!(
+            "{[blue+bold]}\nPrimary: {}\nResolution: {}x{}\nPosition: ({},{})",
+            "Source",
             if self.source_mode_info.bGDIPrimary() == 1 {
                 "true"
             } else {
@@ -129,19 +127,16 @@ impl Output for NvDisplayConfigPathInfo {
             self.source_mode_info.position.y,
         );
         for (i, target) in self.target_info.iter().enumerate() {
-            let target_output = format!(
-                "{} {}\nID: {}\nRefresh rate: {} Hz\nScaling: {}\nRotation: {}",
-                "Target".green().bold(),
-                (i + 1).to_string().green().bold(),
+            bunt::println!(
+                "{[green+bold]} {[green+bold]}\nID: {}\nRefresh rate: {} Hz\nScaling: {}\nRotation: {}",
+                "Target",
+                (i + 1).to_string(),
                 target.display_id,
                 target.details.refreshRate1K / 1000,
                 Scaling::from(target.details.scaling),
                 Rotation(target.details.rotation)
             );
-            output.push('\n');
-            output.push_str(&target_output);
         }
-        output
     }
 
     fn long_display(&self) -> String {

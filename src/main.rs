@@ -1,7 +1,6 @@
 pub mod cli;
 pub mod nvapi;
 
-use colored::*;
 use std::str::FromStr;
 
 use clap::Parser;
@@ -29,7 +28,7 @@ fn main() {
     let mut display_configs = match result {
         Ok(configs) => configs,
         Err(e) => {
-            println!("{}: {}", "Failed to get current display config".red(), e);
+            bunt::println!("{$red}Failed to get current display config: {}{/$}", e);
             unload();
             return;
         }
@@ -37,7 +36,7 @@ fn main() {
 
     if config.list {
         for config in display_configs.iter() {
-            println!("{}\n", config.short_display());
+            config.print_short();
         }
 
         unload();
@@ -72,7 +71,7 @@ fn main() {
                 })
                 .is_none()
             {
-                println!("{}", "Display with specified ID not found".red());
+                bunt::println!("{$red}Display with specified ID not found{/$}");
                 unload();
                 return;
             };
@@ -90,7 +89,7 @@ fn main() {
                 })
                 .is_none()
             {
-                println!("{}", "No primary display found".red());
+                bunt::println!("{$red}No primary display found{/$}");
                 unload();
                 return;
             };
@@ -117,7 +116,7 @@ fn main() {
             .scaling = match Scaling::from_str(scaling) {
             Ok(scaling) => scaling,
             Err(_) => {
-                println!("{}", "Invalid scaling option".red());
+                bunt::println!("{$red}Invalid scaling option{/$}");
                 unload();
                 return;
             }
@@ -142,7 +141,7 @@ fn main() {
         let rotation = match Rotation::try_from(rotation) {
             Ok(rot) => rot.0,
             Err(e) => {
-                println!("{}", e.red());
+                bunt::println!("{[red]}", e);
                 unload();
                 return;
             }
@@ -155,9 +154,9 @@ fn main() {
     if config.display_config_needed() {
         let result = set_display_config(display_configs);
         match result {
-            Ok(_) => println!("{}", "Successfully applied display settings".green()),
+            Ok(_) => bunt::println!("{$green}Successfully applied display settings{/$}"),
             Err(e) => {
-                println!("{}: {}", "Failed to apply display config".red(), e);
+                bunt::println!("{$red}Failed to apply display config: {}{/$}", e);
             }
         };
     }
