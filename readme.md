@@ -1,15 +1,15 @@
-# Description
+## Description
 
 This is a tiny application that allows you to set your monitors' resolution, refresh rate, scaling mode, position and rotation in the command-line.
 Typically this would be done using the Nvidia control panel, but due to its lack of a cli interface, it is difficult to automate those changes.
 
 Note that this program only works on Windows computers.
 
-# Installation
+## Installation
 
 The 64 bit binary can be downloaded from the releases page. In order to get a 32 bit installation, this must be built from source. This process can be simplified with cargo by running `cargo install nvcli`.
 
-# Usage
+## Usage
 
 Help text will be printed if the program is run with no arguments or by passing the `--help` option.
 
@@ -25,7 +25,7 @@ The valid values for each setting can be found by looking in the Nvidia control 
 
 Gamma settings can be set by installing GeForce Experience and using Freestyle to apply a filter.
 
-# Examples
+## Examples
 
 ### Listing displays
 

@@ -21,6 +21,7 @@ defaults:
     values:
       layout: single
       author_profile: true
+      title: About
 
 author:
   name: "Lucas Liu"
@@ -29,7 +30,7 @@ author:
   location: "Melbourne, Australia"
   links:
     - label: "Download"
-      icon: "fas fa-download"
+      icon: "fas fa-fw fa-download"
       url: "https://github.com/sqooid/nvcli/releases"
     - label: "Repository"
       icon: "fab fa-fw fa-github"
