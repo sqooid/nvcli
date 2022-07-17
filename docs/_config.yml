@@ -1,4 +1,11 @@
 remote_theme: "mmistakes/minimal-mistakes@4.24.0"
 minimal_mistakes_skin: "dark"
 plugins:
-- jekyll-include-cache
+  - jekyll-include-cache
+
+author:
+  links:
+    - label: Download
+      url: https://github.com/sqooid/nvcli/releases
+    - label: Repository
+      url: https://github.com/sqooid/nvcli
