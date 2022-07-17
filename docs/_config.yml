@@ -5,7 +5,9 @@ plugins:
 
 author:
   links:
-    - label: Download
-      url: https://github.com/sqooid/nvcli/releases
-    - label: Repository
-      url: https://github.com/sqooid/nvcli
+    - label: "Download"
+      icon: "fas fa-fw fa-link"
+      url: "https://github.com/sqooid/nvcli/releases"
+    - label: "Repository"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/sqooid/nvcli"
