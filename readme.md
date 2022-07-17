@@ -1,6 +1,7 @@
 # Description
 
-This is a tiny application that allows you to set your monitors' resolution, refresh rate and scaling mode in the command-line. Typically this would be done using the Nvidia control panel, but due to its lack of a cli interface, it is difficult to automate those changes.
+This is a tiny application that allows you to set your monitors' resolution, refresh rate, scaling mode, position and rotation in the command-line.
+Typically this would be done using the Nvidia control panel, but due to its lack of a cli interface, it is difficult to automate those changes.
 
 Note that this program only works on Windows computers.
 
@@ -38,6 +39,7 @@ Target 1
 ID: 2147881089                  (The display id of this target, which is used to change which monitor settings are applied to)
 Refresh rate: 165 Hz            (The current refresh rate)
 Scaling: balanced full screen   (The current scaling mode)
+Rotation: 0                     (The current display clockwise rotation in degrees)
 
 Source
 Primary: false
@@ -47,6 +49,7 @@ Target 1
 ID: 2147881090
 Refresh rate: 120 Hz
 Scaling: balanced aspect ratio
+Rotation: 0
 ```
 
 ### Stretched
