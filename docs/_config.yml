@@ -1,0 +1,14 @@
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+minimal_mistakes_skin: "dark"
+plugins:
+  - jekyll-include-cache
+
+author:
+  name: "Lucas Liu"
+  links:
+    - label: "Download"
+      icon: "fas fa-fw fa-link"
+      url: "https://github.com/sqooid/nvcli/releases"
+    - label: "Repository"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/sqooid/nvcli"
