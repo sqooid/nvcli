@@ -12,13 +12,10 @@ pub struct Cli {
     pub resolution_y: Option<u32>,
 
     /// Scaling setting. Defaults to current scaling setting. Valid values are:
-    /// bfs - balanced full screen,
-    /// ffs - forced full screen,
-    /// fc  - forced centered,
-    /// far - forced aspect ratio,
-    /// bar - balanced aspect ratio,
-    /// bc  - balanced centered,
-    /// fis - forced integer scaling
+    /// bfs - balanced full screen (stretch to fill),
+    /// bar - balanced aspect ratio (fill without stretching),
+    /// bc  - balanced centered (no scaling),
+    /// fis - forced integer scaling (scale by integer multiples)
     #[clap(short, long)]
     pub scaling: Option<String>,
 
