@@ -12,6 +12,6 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-nvapi_sys_new = "0.1.4"
+nvapi_sys_new = "1.530.1"
 clap = {version="3.2.11", features=["derive"]}
 bunt = "0.2.6"

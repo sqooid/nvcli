@@ -90,3 +90,5 @@ nvcli -d 2147881090 -R 90 -X 420 -Y=-1920
 ## Notes
 
 Output color can be disabled by setting the environment variable `NO_COLOR=1`.
+
+Unit tests should be run with `cargo test -- --nocapture --test-threads 1`
