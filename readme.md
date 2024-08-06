@@ -1,3 +1,5 @@
+Due to no longer having an Nvidia GPU I'm unable to develop this tool any further. Apologies to anyone requesting additional features.
+
 ## Description
 
 This is a tiny application that allows you to set your monitors' resolution, refresh rate, scaling mode, position and rotation in the command-line.
